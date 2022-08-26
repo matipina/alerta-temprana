@@ -7,7 +7,7 @@ import sklearn
 label = 'Aprobado'
 
 def custom_style(row):
-    color = 'black'
+    color = 'white'
     if row[label] == False:
         color = 'orange'
     print(f'color: {color}')
