@@ -3,10 +3,8 @@ import pickle
 import numpy as np
 import pandas as pd
 import sklearn
-from st_aggrid import AgGrid
 
-
-label = 'Aprobado (predicción)'
+label = 'Aprobado'
 
 def custom_style(row):
     color = 'black'
@@ -70,11 +68,7 @@ def show_predict_page():
 
                     copy = selected_data.copy()
                     copy[label] = model.predict(copy)
-                    #print(copy)
-                    #st.dataframe(data=copy)
-                    #st.plotly_chart(copy)
-                    AgGrid(copy.style.apply(custom_style, axis=1))
-                    #st.dataframe(copy.style.apply(custom_style, axis=1))
+                    st.dataframe(copy.style.apply(custom_style, axis=1))
             else:
                 st.warning('Debes seleccionar al menos un atributo.')
                 next = False
