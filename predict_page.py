@@ -7,12 +7,9 @@ import sklearn
 label = 'Aprobado'
 
 def custom_style(row):
-    color = 'white'
+    color = st.get_option('theme.backgroundColor') # get color corresponding to current theme
     if row[label] == False:
-        color = 'orange'
-    print(f'color: {color}')
-    print(f'row[label]: {row[label]}')
-    print(f'row:\n{row}')
+        color = st.get_option('theme.primaryColor')
 
     return ['background-color: %s' % color]*len(row.values)
 
