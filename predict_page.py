@@ -95,6 +95,16 @@ def show_predict_page():
                     final_data = final_data[cols]
                     
                     st.dataframe(final_data.style.apply(custom_style, axis=1))
+
+                    st.download_button(
+                                    "Descargar",
+                                    final_data.to_csv().encode('utf-8'),
+                                    f"predicciones_{'_'.join(new_list)}.csv",
+                                    "text/csv",
+                                    key='download-csv'
+                                    )
+
+                    
             else:
                 st.warning('Debes seleccionar al menos un atributo.')
                 next = False
