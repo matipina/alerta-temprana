@@ -52,21 +52,34 @@ def show_predict_page():
 
             st.write(
                     f'''
-                    #### Selecciona las columnas a utilizar para las predicciones:
-                    *nota: debe ser un subset de {course_variables[code]}* 
+                    #### Selecciona las columnas a utilizar para las predicciones: 
                     ''')
             
             available_values = course_variables[code]
             selected_values = {}
 
+            value_options = []
+            for i in range(1, len(available_values)+1):
+                value_options.append(available_values[:i])
+
+            new_list = st.select_slider(
+                f'Columnas disponibles: {"   -   ".join(course_variables[code])}',
+                options=value_options,
+                format_func=' - '.join
+                )
+            
+            '''
             # Creamos un checkbox para cada valor disponible
             for column in available_values:
                 selected_values[column] = st.checkbox(column, key=column)
-
+            
             # Creamos una lista con los valores seleccionados en las checkboxes
             new_list = [value for value, selected in selected_values.items() if selected]
+            '''
+            
             next = st.button('Siguiente')
-            num_selected = sum(selected_values.values())
+            #num_selected = sum(selected_values.values())
+            num_selected = len(new_list)
 
             if num_selected >= 1:
                 if next:
@@ -95,6 +108,16 @@ def show_predict_page():
                     final_data = final_data[cols]
                     
                     st.dataframe(final_data.style.apply(custom_style, axis=1))
+
+                    st.download_button(
+                                    "Descargar",
+                                    final_data.to_csv().encode('utf-8'),
+                                    f"predicciones_{'_'.join(new_list)}.csv",
+                                    "text/csv",
+                                    key='download-csv'
+                                    )
+
+                    
             else:
                 st.warning('Debes seleccionar al menos un atributo.')
                 next = False
