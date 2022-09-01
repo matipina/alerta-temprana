@@ -8,8 +8,5 @@ Dev: https://matipina-alerta-temprana-app-dev-l1f3hf.streamlitapp.com/
 
 To do:
 
-* La selección de notas a utilizar no debe permitir saltarse ninguna. 
-* El orden de las notas seleccionadas debe ser independiente al orden en el cual fueron seleccionadas.
-* Agregar funcionalidad para descargar predicciones generadas
 * Agregar "nivel de riesgo". *Idea para esto: realizar predicciones con distintos thresholds.*
-
+* Calcular *'tries'* automáticamente usando id.
