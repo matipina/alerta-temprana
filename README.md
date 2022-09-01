@@ -6,4 +6,8 @@ Para ir a la app, ve a la url: https://matipina-alerta-temprana-app-j5m8ah.strea
 
 To do:
 
-* La selección de notas a utilizar no debe permitir saltarse ninguna.
+* La selección de notas a utilizar no debe permitir saltarse ninguna. 
+* El orden de las notas seleccionadas debe ser independiente al orden en el cual fueron seleccionadas.
+* Agregar funcionalidad para descargar predicciones generadas
+* Agregar "nivel de riesgo". *Idea para esto: realizar predicciones con distintos thresholds.*
+
