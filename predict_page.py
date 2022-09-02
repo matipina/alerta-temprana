@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import sklearn
+import os
 
 label = 'Aprobado'
 course_variables = {
@@ -17,6 +18,39 @@ def custom_style(row):
         color = st.get_option('theme.primaryColor')
 
     return ['background-color: %s' % color]*len(row.values)
+
+
+def get_attempts(filename, df, code, id):
+    '''
+    1. Revisamos todos los archivos en {code}
+    2. Cargamos los archivos que no son {df}
+    3. Comparamos la columna {id} de {df} con los demás archivos, y contamos las repeticiones
+    de cada elemento
+    4. Retornamos {df} con columna {tries}
+    '''
+
+    data_path = os.path.join('data', code)
+
+    id_col = df[id]
+    other_ids = []
+
+    for root, _, files in os.walk(data_path, topdown = False):
+        for name in files:
+            if name != filename:
+                if name.endswith('.csv'):
+                    new_df = pd.read_csv(os.path.join(root, name))
+                    other_ids.append(new_df[id])
+
+                elif name.endswith('.xlsx') or name.endswith('.xls'):
+                    new_df = pd.read_excel(os.path.join(root, name))
+                    other_ids.append(new_df[id])
+
+    # almacenamos los otros ids en {other_ids}
+    for id_cols in other_ids:
+        pass
+
+    return
+
 
 def show_predict_page():
     st.write(
@@ -38,7 +72,7 @@ def show_predict_page():
 
         st.write(f'#### {course}')
         code = course[:7]
-        model_folder = f'models/{code}'
+        model_directory = f'models/{code}'
 
         file = st.file_uploader("Carga un archivo (.csv o .xlsx) con las notas del semestre.")
         if file:
@@ -50,13 +84,36 @@ def show_predict_page():
             else:
                 st.warning('Tipo de archivo no válido. Inténtalo de nuevo.')
 
+
+            id_col = st.selectbox(
+                '''
+                Selecciona una columna que identifique a los estudiantes (id).
+                Esta columna debe tener valores únicos.
+                ''',
+                df.columns.to_list())
+                
+            if id_col:
+                st.write(f'"*{id_col}*" seleccionada como columna de identificación.')
+            
+            next_1 = st.button('Siguiente', key='load_data')
+
+            ### Agregar if next_1, incluyendo session state
+
+            # Obtenemos 'tries'
+            df_full = get_attempts(filename, df, code, id=id_col)
+
+
+
+
+
+
+
             st.write(
-                    f'''
+                    '''
                     #### Selecciona las columnas a utilizar para las predicciones: 
                     ''')
             
             available_values = course_variables[code]
-            selected_values = {}
 
             value_options = []
             for i in range(1, len(available_values)+1):
@@ -65,24 +122,14 @@ def show_predict_page():
             new_list = st.select_slider(
                 f'Columnas disponibles: {"   -   ".join(course_variables[code])}',
                 options=value_options,
-                format_func=' - '.join
+                format_func=' - '.join,
                 )
             
-            '''
-            # Creamos un checkbox para cada valor disponible
-            for column in available_values:
-                selected_values[column] = st.checkbox(column, key=column)
-            
-            # Creamos una lista con los valores seleccionados en las checkboxes
-            new_list = [value for value, selected in selected_values.items() if selected]
-            '''
-            
-            next = st.button('Siguiente')
-            #num_selected = sum(selected_values.values())
+            next_2 = st.button('Siguiente', key='model_preparation')
             num_selected = len(new_list)
 
             if num_selected >= 1:
-                if next:
+                if next_2:
                     selected_data = df.loc[:, new_list]
                     st.write(
                         '''
@@ -90,7 +137,7 @@ def show_predict_page():
                         '''
                     )
 
-                    model_path = f'{model_folder}/model{num_selected-1}.sav'
+                    model_path = f'{model_directory}/model{num_selected-1}.sav'
                     model = pickle.load(open(model_path, 'rb'))
 
                     copy = selected_data.copy()
@@ -121,10 +168,3 @@ def show_predict_page():
             else:
                 st.warning('Debes seleccionar al menos un atributo.')
                 next = False
-
-
-
-
-
-
-
