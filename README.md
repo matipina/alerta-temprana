@@ -10,3 +10,4 @@ To do:
 
 * Agregar "nivel de riesgo". *Idea para esto: realizar predicciones con distintos thresholds.*
 * Calcular *'tries'* automáticamente usando id.
+* Guardar historial y mostrar cambios en predicciones: al generar predicciones más de una vez, obtener un registro de la evolución del estado de riesgo de los estudiantes.

@@ -95,16 +95,8 @@ def show_predict_page():
             if id_col:
                 st.write(f'"*{id_col}*" seleccionada como columna de identificación.')
             
-            next_1 = st.button('Siguiente', key='load_data')
-
-            ### Agregar if next_1, incluyendo session state
-
             # Obtenemos 'tries'
             df_full = get_attempts(filename, df, code, id=id_col)
-
-
-
-
 
 
 
@@ -119,18 +111,19 @@ def show_predict_page():
             for i in range(1, len(available_values)+1):
                 value_options.append(available_values[:i])
 
-            new_list = st.select_slider(
-                f'Columnas disponibles: {"   -   ".join(course_variables[code])}',
-                options=value_options,
-                format_func=' - '.join,
-                )
+            predictors = st.radio(
+            "Selecciona las columnas a utilizar para las predicciones:",
+            value_options,
+            format_func=' - '.join
+            )
+
             
             next_2 = st.button('Siguiente', key='model_preparation')
-            num_selected = len(new_list)
+            num_selected = len(predictors)
 
             if num_selected >= 1:
                 if next_2:
-                    selected_data = df.loc[:, new_list]
+                    selected_data = df.loc[:, predictors]
                     st.write(
                         '''
                         #### Predicciones:
@@ -141,8 +134,9 @@ def show_predict_page():
                     model = pickle.load(open(model_path, 'rb'))
 
                     copy = selected_data.copy()
-                    clean_data = copy.dropna(subset=new_list)
-                    clean_data[label] = model.predict(clean_data)
+                    clean_data = copy.dropna(subset=predictors)
+                    predictions = model.predict(clean_data)
+                    clean_data.loc[:, label] = predictions
 
                     # Agregar datos para identificar a los estudiantes
                     if any(i in df.columns for i in ('id', 'ID', 'Id')):
@@ -159,7 +153,7 @@ def show_predict_page():
                     st.download_button(
                                     "Descargar",
                                     final_data.to_csv().encode('utf-8'),
-                                    f"predicciones_{'_'.join(new_list)}.csv",
+                                    f"predicciones_{'_'.join(predictors)}.csv",
                                     "text/csv",
                                     key='download-csv'
                                     )
