@@ -84,6 +84,9 @@ def show_predict_page():
             else:
                 st.warning('Tipo de archivo no válido. Inténtalo de nuevo.')
 
+            # Arreglamos el formato de los nombres de las columnas,
+            # eliminando espacios en blanco.
+            df.columns = df.columns.str.strip().str.upper()
 
             id_col = st.selectbox(
                 '''
@@ -111,6 +114,7 @@ def show_predict_page():
             for i in range(1, len(available_values)+1):
                 value_options.append(available_values[:i])
 
+            st.write(f'columns: {df.columns}')
             predictors = st.radio(
             "Selecciona las columnas a utilizar para las predicciones:",
             value_options,
@@ -123,6 +127,7 @@ def show_predict_page():
 
             if num_selected >= 1:
                 if next_2:
+                    st.write(f'predictors: {predictors}')
                     selected_data = df.loc[:, predictors]
                     st.write(
                         '''
