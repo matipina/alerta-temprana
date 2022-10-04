@@ -99,7 +99,7 @@ def show_predict_page():
                 st.write(f'"*{id_col}*" seleccionada como columna de identificación.')
             
             # Obtenemos 'tries'
-            df_full = get_attempts(filename, df, code, id=id_col)
+            # df_full = get_attempts(filename, df, code, id=id_col)
 
 
 
@@ -127,7 +127,6 @@ def show_predict_page():
 
             if num_selected >= 1:
                 if next_2:
-                    st.write(f'predictors: {predictors}')
                     selected_data = df.loc[:, predictors]
                     st.write(
                         '''
@@ -135,7 +134,7 @@ def show_predict_page():
                         '''
                     )
 
-                    model_path = f'{model_directory}/model{num_selected-1}.sav'
+                    model_path = f'{model_directory}/model{num_selected}.sav'
                     model = pickle.load(open(model_path, 'rb'))
 
                     copy = selected_data.copy()
