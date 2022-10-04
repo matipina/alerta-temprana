@@ -5,7 +5,10 @@ import pandas as pd
 import sklearn
 import os
 
-label = 'Aprobado'
+label = 'Predicción'
+pass_label = 'Aprueba'
+fail_label = 'Reprueba'
+
 course_variables = {
     'IIC1103': ['tries', 'T1', 'I1', 'T2', 'I2'],
     'IIC2233': [],
@@ -14,7 +17,7 @@ course_variables = {
 
 def custom_style(row):
     color = st.get_option('theme.backgroundColor') # get color corresponding to current theme
-    if row[label] == False:
+    if row[label] == fail_label:
         color = st.get_option('theme.primaryColor')
 
     return ['background-color: %s' % color]*len(row.values)
@@ -114,7 +117,6 @@ def show_predict_page():
             for i in range(1, len(available_values)+1):
                 value_options.append(available_values[:i])
 
-            st.write(f'columns: {df.columns}')
             predictors = st.radio(
             "Selecciona las columnas a utilizar para las predicciones:",
             value_options,
@@ -143,14 +145,18 @@ def show_predict_page():
                     clean_data.loc[:, label] = predictions
 
                     # Agregar datos para identificar a los estudiantes
+                    '''
                     if any(i in df.columns for i in ('id', 'ID', 'Id')):
                         student_data = df.loc[:, df.columns.isin(('id', 'ID', 'Id'))]
                     else:
                         student_data = df.iloc[:, 0]
+                    '''
+                    student_data = df[id_col]
                     final_data = clean_data.merge(student_data, left_index=True, right_index=True)
 
-                    cols = student_data.columns.tolist() + clean_data.columns.tolist()
+                    cols = [id_col] + clean_data.columns.tolist()
                     final_data = final_data[cols]
+                    final_data[label] = [pass_label if i==1 else fail_label for i in final_data[label]]
                     
                     st.dataframe(final_data.style.apply(custom_style, axis=1))
 
