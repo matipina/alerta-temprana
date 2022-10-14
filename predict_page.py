@@ -10,7 +10,7 @@ pass_label = 'Aprueba'
 fail_label = 'Reprueba'
 
 course_variables = {
-    'IIC1103': ['tries', 'T1', 'I1', 'T2', 'I2'],
+    'IIC1103': ['T1', 'I1', 'T2', 'I2', 'T3'],
     'IIC2233': [],
     'ICH1104': ['T1', 'I1', 'T2', 'I2', 'T3']
 }
