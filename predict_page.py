@@ -58,11 +58,7 @@ def get_attempts(filename, df, code, id):
 def to_excel(df):
     output = BytesIO()
     writer = pd.ExcelWriter(output)
-    df.to_excel(writer, index=False, sheet_name='Sheet1')
-    workbook = writer.book
-    worksheet = writer.sheets['Sheet1']
-    #format1 = workbook.add_format({'num_format': '0.00'}) 
-    #worksheet.set_column('A:A', None, format1)  
+    df.to_excel(writer, index=False, sheet_name='Sheet1') 
     writer.save()
     processed_data = output.getvalue()
     return processed_data
@@ -173,16 +169,16 @@ def show_predict_page():
 
                     st.download_button(
                                     "Descargar (formato csv)",
-                                    final_data.to_csv(index=False),
-                                    f"predicciones_{'_'.join(predictors)}.csv",
-                                    "text/csv",
+                                    data=final_data.to_csv(index=False),
+                                    file_name=f"predicciones_{'_'.join(predictors)}.csv",
+                                    mime="text/csv",
                                     key='download-csv'
                                     )
 
                     st.download_button(
                                     "Descargar (formato excel)",
                                     data = to_excel(final_data),
-                                    file_name = f"predicciones_{'_'.join(predictors)}.xlsx",
+                                    file_name=f"predicciones_{'_'.join(predictors)}.xlsx",
                                     mime="application/vnd.ms-excel",
                                     key='download-excel'
                                     )
