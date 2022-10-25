@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import sklearn
+from io import BytesIO
 import os
 
 label = 'Predicción'
@@ -11,7 +12,7 @@ fail_label = 'Reprueba'
 
 course_variables = {
     'IIC1103': ['T1', 'I1', 'T2', 'I2', 'T3'],
-    'IIC2233': [],
+    'IIC2233': ['T0', 'AS01', 'T1', 'AS02', 'AS03', 'T2', 'AS04', 'T3', 'AS05'],
     'ICH1104': ['T1', 'I1', 'T2', 'I2', 'T3']
 }
 
@@ -53,6 +54,18 @@ def get_attempts(filename, df, code, id):
         pass
 
     return
+
+def to_excel(df):
+    output = BytesIO()
+    writer = pd.ExcelWriter(output)
+    df.to_excel(writer, index=False, sheet_name='Sheet1')
+    workbook = writer.book
+    worksheet = writer.sheets['Sheet1']
+    #format1 = workbook.add_format({'num_format': '0.00'}) 
+    #worksheet.set_column('A:A', None, format1)  
+    writer.save()
+    processed_data = output.getvalue()
+    return processed_data
 
 
 def show_predict_page():
@@ -103,8 +116,6 @@ def show_predict_page():
             
             # Obtenemos 'tries'
             # df_full = get_attempts(filename, df, code, id=id_col)
-
-
 
             st.write(
                     '''
@@ -161,11 +172,19 @@ def show_predict_page():
                     st.dataframe(final_data.style.apply(custom_style, axis=1))
 
                     st.download_button(
-                                    "Descargar",
-                                    final_data.to_csv().encode('utf-8'),
+                                    "Descargar (formato csv)",
+                                    final_data.to_csv(index=False),
                                     f"predicciones_{'_'.join(predictors)}.csv",
                                     "text/csv",
                                     key='download-csv'
+                                    )
+
+                    st.download_button(
+                                    "Descargar (formato excel)",
+                                    data = to_excel(final_data),
+                                    file_name = f"predicciones_{'_'.join(predictors)}.xlsx",
+                                    mime="application/vnd.ms-excel",
+                                    key='download-excel'
                                     )
 
                     
