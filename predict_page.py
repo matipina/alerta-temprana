@@ -72,7 +72,8 @@ def show_predict_page():
 
     courses = (
         'Selecciona',
-        'IIC1103: Introducción a la Programación',
+        'IIC1103: Introducción a la Programación v1',
+        'IIC1103: Introducción a la Programación v2',
         'IIC2233: Programación Avanzada',
         'ICH1104: Mecánica de fluidos',
         'ICS1113: Optimización',    
@@ -84,7 +85,10 @@ def show_predict_page():
 
         st.write(f'#### {course}')
         code = course[:7]
+        version = course[-2:]
         model_directory = f'models/{code}'
+        if code == 'IIC1103':
+            model_directory += f'/{version}'
 
         file = st.file_uploader("Carga un archivo (.csv o .xlsx) con las notas del semestre.")
         if file:
@@ -142,6 +146,7 @@ def show_predict_page():
                         #### Predicciones:
                         '''
                     )
+
 
                     model_path = f'{model_directory}/model{num_selected}.sav'
                     model = pickle.load(open(model_path, 'rb'))
