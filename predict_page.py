@@ -58,11 +58,7 @@ def get_attempts(filename, df, code, id):
 def to_excel(df):
     output = BytesIO()
     writer = pd.ExcelWriter(output)
-    df.to_excel(writer, index=False, sheet_name='Sheet1')
-    workbook = writer.book
-    worksheet = writer.sheets['Sheet1']
-    #format1 = workbook.add_format({'num_format': '0.00'}) 
-    #worksheet.set_column('A:A', None, format1)  
+    df.to_excel(writer, index=False, sheet_name='Sheet1') 
     writer.save()
     processed_data = output.getvalue()
     return processed_data
@@ -76,7 +72,8 @@ def show_predict_page():
 
     courses = (
         'Selecciona',
-        'IIC1103: Introducción a la Programación',
+        'IIC1103: Introducción a la Programación v1',
+        'IIC1103: Introducción a la Programación v2',
         'IIC2233: Programación Avanzada',
         'ICH1104: Mecánica de fluidos',
         'ICS1113: Optimización',    
@@ -88,7 +85,10 @@ def show_predict_page():
 
         st.write(f'#### {course}')
         code = course[:7]
+        version = course[-2:]
         model_directory = f'models/{code}'
+        if code == 'IIC1103':
+            model_directory += f'/{version}'
 
         file = st.file_uploader("Carga un archivo (.csv o .xlsx) con las notas del semestre.")
         if file:
@@ -147,6 +147,7 @@ def show_predict_page():
                         '''
                     )
 
+
                     model_path = f'{model_directory}/model{num_selected}.sav'
                     model = pickle.load(open(model_path, 'rb'))
 
@@ -173,16 +174,16 @@ def show_predict_page():
 
                     st.download_button(
                                     "Descargar (formato csv)",
-                                    final_data.to_csv(index=False),
-                                    f"predicciones_{'_'.join(predictors)}.csv",
-                                    "text/csv",
+                                    data=final_data.to_csv(index=False),
+                                    file_name=f"predicciones_{'_'.join(predictors)}.csv",
+                                    mime="text/csv",
                                     key='download-csv'
                                     )
 
                     st.download_button(
                                     "Descargar (formato excel)",
                                     data = to_excel(final_data),
-                                    file_name = f"predicciones_{'_'.join(predictors)}.xlsx",
+                                    file_name=f"predicciones_{'_'.join(predictors)}.xlsx",
                                     mime="application/vnd.ms-excel",
                                     key='download-excel'
                                     )
